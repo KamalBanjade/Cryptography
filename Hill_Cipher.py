@@ -26,7 +26,7 @@ def hill_cipher_decrypt(ciphertext, key):
     return plaintext
 
 def get_key_matrix():
-    n = int(input("Enter the dimension of the key matrix (e.g., 2 for 2x2, 3 for 3x3): "))
+    n = int(input("Enter the dimension of the key matrix:  "))
     print(f"Enter the elements of the {n}x{n} key matrix row by row:")
     key = []
     for i in range(n):
