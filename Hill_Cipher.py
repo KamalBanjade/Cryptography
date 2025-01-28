@@ -58,6 +58,5 @@ if key is not None:
     plaintext = input("Enter the plaintext: ")
     ciphertext = hill_cipher_encrypt(plaintext, key)
     print("Encrypted Text: ", ciphertext)
-
     decrypted_text = hill_cipher_decrypt(ciphertext, key)
     print("Decrypted Text: ", decrypted_text)
