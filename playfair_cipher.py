@@ -56,15 +56,14 @@ def find_position(matrix, char):
     return None  # Character not found (should not happen for valid input)
 
 
-def encrypt(text, key):
+def process_text(text, key, encrypting=True):
     # Generate the Playfair matrix
     matrix = generate_playfair_matrix(key)
 
-    # Prepare the input text
-    text = prepare_input(text)
+    # Prepare the input text for encryption or decryption
+    text = prepare_input(text) if encrypting else text
 
-    # Encrypt the text
-    encrypted_text = ""
+    processed_text = ""
     for i in range(0, len(text), 2):
         char1 = text[i]
         char2 = text[i + 1]
@@ -74,60 +73,59 @@ def encrypt(text, key):
 
         # Case 1: Both characters are in the same row
         if row1 == row2:
-            encrypted_text += matrix[row1][(col1 + 1) % 5]
-            encrypted_text += matrix[row2][(col2 + 1) % 5]
+            shift = 1 if encrypting else -1
+            processed_text += matrix[row1][(col1 + shift) % 5]
+            processed_text += matrix[row2][(col2 + shift) % 5]
 
         # Case 2: Both characters are in the same column
         elif col1 == col2:
-            encrypted_text += matrix[(row1 + 1) % 5][col1]
-            encrypted_text += matrix[(row2 + 1) % 5][col2]
+            shift = 1 if encrypting else -1
+            processed_text += matrix[(row1 + shift) % 5][col1]
+            processed_text += matrix[(row2 + shift) % 5][col2]
 
         # Case 3: Characters form a rectangle
         else:
-            encrypted_text += matrix[row1][col2]
-            encrypted_text += matrix[row2][col1]
+            processed_text += matrix[row1][col2]
+            processed_text += matrix[row2][col1]
 
-    return encrypted_text
+    return processed_text
 
 
-def decrypt(encrypted_text, key):
-    # Generate the Playfair matrix
-    matrix = generate_playfair_matrix(key)
+def encrypt(text, key):
+    return process_text(text, key, encrypting=True)
 
-    # Decrypt the text
-    plaintext = ""
-    for i in range(0, len(encrypted_text), 2):
-        char1 = encrypted_text[i]
-        char2 = encrypted_text[i + 1]
 
-        row1, col1 = find_position(matrix, char1)
-        row2, col2 = find_position(matrix, char2)
+def decrypt(text, key):
+    return process_text(text, key, encrypting=False)
 
-        # Case 1: Both characters are in the same row
-        if row1 == row2:
-            plaintext += matrix[row1][(col1 - 1) % 5]  # Move left (wrap around if necessary)
-            plaintext += matrix[row2][(col2 - 1) % 5]
 
-        # Case 2: Both characters are in the same column
-        elif col1 == col2:
-            plaintext += matrix[(row1 - 1) % 5][col1]  # Move up (wrap around if necessary)
-            plaintext += matrix[(row2 - 1) % 5][col2]
-
-        # Case 3: Characters form a rectangle
+def remove_padding_x(text):
+    cleaned_text = ""
+    i = 0
+    while i < len(text):
+        if text[i] != 'X':
+            cleaned_text += text[i]
+        elif i > 0 and i < len(text) - 1 and text[i - 1] == text[i + 1]:
+            pass  # Ignore padding 'X' between double letters
         else:
-            plaintext += matrix[row1][col2]
-            plaintext += matrix[row2][col1]
+            pass  # Ignore padding 'X' added to make the text length even
+        i += 1
+    return cleaned_text
 
-    return plaintext
-# Example usage:
-key = "PLAYFAIREXAMPLE"
-plaintext = "HELLO WORLD"
+
+# Main Program
+key = input("Enter the key: ")
+plaintext = input("Enter the plaintext: ")
 
 # Encrypt the plaintext
 ciphertext = encrypt(plaintext, key)
-print("Plaintext:", plaintext)
+print("\nPlaintext:", plaintext)
 print("Ciphertext:", ciphertext)
 
 # Decrypt the ciphertext
 decrypted_text = decrypt(ciphertext, key)
-print("Decrypted Text:", decrypted_text)
+print("Decrypted Text (with padding):", decrypted_text)
+
+# Remove any extra 'X' characters added during encryption
+cleaned_decrypted_text = remove_padding_x(decrypted_text)
+print("Decrypted Text (cleaned):", cleaned_decrypted_text)
