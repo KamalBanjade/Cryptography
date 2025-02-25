@@ -28,8 +28,8 @@ def vigenere_decrypt(ciphertext, key):
             plaintext += char
     return plaintext
 
-plaintext = input("Enter the plaintext: ")
-key = input("Enter the key: ")
+plaintext ='kamal'
+key = 'heyy'
 
 ciphertext = vigenere_cipher(plaintext, key)
 print(f"Encrypted ciphertext: {ciphertext}")
